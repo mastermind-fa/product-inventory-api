@@ -35,7 +35,7 @@ This is a RESTful API for managing a product inventory system using Node.js, Exp
 
 3. Create a `.env` file in the root directory and add the following:
    ```env
-   PORT=5000
+   PORT=8080
    MONGO_URI=your_mongodb_connection_string
    JWT_SECRET=your_jwt_secret_key
    ```
@@ -64,8 +64,8 @@ This is a RESTful API for managing a product inventory system using Node.js, Exp
 | GET | `/api/products/?sort=price` | Get all products sorted by price |
 | GET | `/api/products/?sort=-price` | Get all products sorted by price in descending order |
 | GET | `/api/products/?category=<category>` | Get all products filtered by category |
-| GET | `/api/products/?category=<category>&sort=price` | Get all products in the Electronics category sorted by price |
-| GET | `/api/products/?category=<category>&sort=-price` | Get all products in the Electronics category sorted by price in descending order |
+| GET | `/api/products/?category=<category>&sort=price` | Get all products in the <category> category sorted by price |
+| GET | `/api/products/?category=<category>&sort=-price` | Get all products in the <category> category sorted by price in descending order |
 
 | GET | `/api/products/:id` | Get a specific product by ID |
 | POST | `/api/products` | Add a new product (requires authentication) |
@@ -76,14 +76,14 @@ This is a RESTful API for managing a product inventory system using Node.js, Exp
 
 ### 1. Register a User
 ```sh
-curl -X POST "http://localhost:5000/api/auth/register" \
+curl -X POST "http://localhost:8080/api/auth/register" \
      -H "Content-Type: application/json" \
      -d '{"username": "user1", "password": "password123"}'
 ```
 
 ### 2. Login to Get JWT Token
 ```sh
-curl -X POST "http://localhost:5000/api/auth/login" \
+curl -X POST "http://localhost:8080/api/auth/login" \
      -H "Content-Type: application/json" \
      -d '{"username": "user1", "password": "password123"}'
 ```
@@ -96,19 +96,19 @@ Response:
 
 ### 3. Fetch Products with Authentication
 ```sh
-curl -X GET "http://localhost:5000/api/products" \
+curl -X GET "http://localhost:8080/api/products" \
      -H "Authorization: Bearer your_jwt_token"
 ```
 
 ### 4. Create a New Product (Authenticated)
 ```sh
-curl -X POST "http://localhost:5000/api/products" \
+curl -X POST "http://localhost:8080/api/products" \
      -H "Authorization: Bearer your_jwt_token" \
      -H "Content-Type: application/json" \
      -d '{
            "name": "Wireless Headphones",
            "price": 49.99,
-           "category": "Electronics",
+           "category": "<category>",
            "stock": 25,
            "description": "Bluetooth over-ear headphones with noise cancellation"
         }'
@@ -116,7 +116,7 @@ curl -X POST "http://localhost:5000/api/products" \
 
 ### 5. Fetch Products with Pagination, Sorting, and Filtering
 ```sh
-curl -X GET "http://localhost:5000/api/products?page=1&limit=5&sort=-price&category=Electronics" \
+curl -X GET "http://localhost:8080/api/products?page=1&limit=5&sort=-price&category=<category>" \
      -H "Authorization: Bearer your_jwt_token"
 ```
 

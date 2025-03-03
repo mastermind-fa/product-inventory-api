@@ -1,6 +1,7 @@
 const Product = require("../models/Product");
+const authenticateUser = require("../middleware/authMiddleware");
 
-// Get all products with pagination, sorting, and filtering
+// Get all products with pagination, sorting, and filtering (Protected)
 const getProducts = async (req, res) => {
     try {
         let { page, limit, sort, category } = req.query;
@@ -40,7 +41,7 @@ const getProducts = async (req, res) => {
     }
 };
 
-// Get product by ID
+// Get product by ID (Protected)
 const getProductById = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
@@ -51,7 +52,7 @@ const getProductById = async (req, res) => {
     }
 };
 
-// Create a product (protected)
+// Create a product (Protected)
 const createProduct = async (req, res) => {
     try {
         const { name, price, category, stock, description } = req.body;
@@ -63,7 +64,7 @@ const createProduct = async (req, res) => {
     }
 };
 
-// Update a product (protected)
+// Update a product (Protected)
 const updateProduct = async (req, res) => {
     try {
         const updatedProduct = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -74,7 +75,7 @@ const updateProduct = async (req, res) => {
     }
 };
 
-// Delete a product (protected)
+// Delete a product (Protected)
 const deleteProduct = async (req, res) => {
     try {
         const deletedProduct = await Product.findByIdAndDelete(req.params.id);
@@ -85,4 +86,12 @@ const deleteProduct = async (req, res) => {
     }
 };
 
-module.exports = { getProducts, getProductById, createProduct, updateProduct, deleteProduct };
+module.exports = {
+    getProducts: [authenticateUser, getProducts],
+    getProductById: [authenticateUser, getProductById],
+    createProduct: [authenticateUser, createProduct],
+    updateProduct: [authenticateUser, updateProduct],
+    deleteProduct: [authenticateUser, deleteProduct]
+};
+
+// module.exports = { getProducts, getProductById, createProduct, updateProduct, deleteProduct };
