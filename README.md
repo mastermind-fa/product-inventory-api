@@ -24,7 +24,7 @@ This is a RESTful API for managing a product inventory system using Node.js, Exp
 ## Installation
 1. Clone the repository:
    ```sh
-   git clone https://github.com/your-repo/product-inventory-api.git
+   git clone https://github.com/mastermind-fa/product-inventory-api
    cd product-inventory-api
    ```
 
@@ -66,7 +66,6 @@ This is a RESTful API for managing a product inventory system using Node.js, Exp
 | GET | `/api/products/?category=<category>` | Get all products filtered by category |
 | GET | `/api/products/?category=<category>&sort=price` | Get all products in the <category> category sorted by price |
 | GET | `/api/products/?category=<category>&sort=-price` | Get all products in the <category> category sorted by price in descending order |
-
 | GET | `/api/products/:id` | Get a specific product by ID |
 | POST | `/api/products` | Add a new product (requires authentication) |
 | PUT | `/api/products/:id` | Update a product (requires authentication) |
@@ -126,6 +125,8 @@ To deploy on **Render, Vercel, or Railway**, follow these steps:
 2. Link your repository to the chosen hosting platform
 3. Add the required environment variables (`MONGO_URI`, `JWT_SECRET`)
 4. Deploy and get the live API URL
+
+Live API URL: [https://product-inventory-api-iji4.onrender.com](https://product-inventory-api-iji4.onrender.com)
 
 ## License
 This project is open-source and available under the MIT License.
