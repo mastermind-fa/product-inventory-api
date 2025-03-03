@@ -1,69 +1,88 @@
-const Product = require('../models/Product');
+const Product = require("../models/Product");
 
-// @desc Get all products
-// @route GET /api/products
+// Get all products with pagination, sorting, and filtering
 const getProducts = async (req, res) => {
-  try {
-    const products = await Product.find();
-    res.json(products);
-  } catch (error) {
-    res.status(500).json({ message: "Server Error" });
-  }
+    try {
+        let { page, limit, sort, category } = req.query;
+
+        page = parseInt(page) || 1;
+        limit = parseInt(limit) || 10;
+        const skip = (page - 1) * limit;
+
+        let query = {};
+        if (category) {
+            query.category = category;
+        }
+
+        let products = Product.find(query)
+            .skip(skip)
+            .limit(limit);
+
+        if (sort) {
+            const sortCriteria = {};
+            const sortOrder = sort.startsWith('-') ? -1 : 1;
+            sortCriteria[sort.replace('-', '')] = sortOrder;
+            products = products.sort(sortCriteria);
+        }
+
+        const results = await products;
+        const totalProducts = await Product.countDocuments(query);
+
+        res.json({
+            totalProducts,
+            page,
+            limit,
+            totalPages: Math.ceil(totalProducts / limit),
+            data: results,
+        });
+    } catch (error) {
+        res.status(500).json({ error: "Internal Server Error" });
+    }
 };
 
-// @desc Get a product by ID
-// @route GET /api/products/:id
+// Get product by ID
 const getProductById = async (req, res) => {
-  try {
-    const product = await Product.findById(req.params.id);
-    if (!product) {
-      return res.status(404).json({ message: "Product not found" });
+    try {
+        const product = await Product.findById(req.params.id);
+        if (!product) return res.status(404).json({ error: "Product not found" });
+        res.json(product);
+    } catch (error) {
+        res.status(500).json({ error: "Internal Server Error" });
     }
-    res.json(product);
-  } catch (error) {
-    res.status(500).json({ message: "Server Error" });
-  }
 };
 
-// @desc Create a new product
-// @route POST /api/products
+// Create a product (protected)
 const createProduct = async (req, res) => {
-  try {
-    const { name, price, category, stock, description } = req.body;
-    const product = new Product({ name, price, category, stock, description });
-    await product.save();
-    res.status(201).json(product);
-  } catch (error) {
-    res.status(400).json({ message: "Invalid product data" });
-  }
+    try {
+        const { name, price, category, stock, description } = req.body;
+        const newProduct = new Product({ name, price, category, stock, description });
+        await newProduct.save();
+        res.status(201).json(newProduct);
+    } catch (error) {
+        res.status(500).json({ error: "Internal Server Error" });
+    }
 };
 
-// @desc Update a product by ID
-// @route PUT /api/products/:id
+// Update a product (protected)
 const updateProduct = async (req, res) => {
-  try {
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!product) {
-      return res.status(404).json({ message: "Product not found" });
+    try {
+        const updatedProduct = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!updatedProduct) return res.status(404).json({ error: "Product not found" });
+        res.json(updatedProduct);
+    } catch (error) {
+        res.status(500).json({ error: "Internal Server Error" });
     }
-    res.json(product);
-  } catch (error) {
-    res.status(500).json({ message: "Server Error" });
-  }
 };
 
-// @desc Delete a product by ID
-// @route DELETE /api/products/:id
+// Delete a product (protected)
 const deleteProduct = async (req, res) => {
-  try {
-    const product = await Product.findByIdAndDelete(req.params.id);
-    if (!product) {
-      return res.status(404).json({ message: "Product not found" });
+    try {
+        const deletedProduct = await Product.findByIdAndDelete(req.params.id);
+        if (!deletedProduct) return res.status(404).json({ error: "Product not found" });
+        res.json({ message: "Product deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ error: "Internal Server Error" });
     }
-    res.json({ message: "Product deleted" });
-  } catch (error) {
-    res.status(500).json({ message: "Server Error" });
-  }
 };
 
 module.exports = { getProducts, getProductById, createProduct, updateProduct, deleteProduct };
